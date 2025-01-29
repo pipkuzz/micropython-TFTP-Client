@@ -12,7 +12,7 @@ class: TFTPClient([host='255.255.255.255'], [port=69])
     Returns:
         socket: Socket for communication with TFTP server
         
-    Method: put_file('file_name', [mode='ascii'])
+Method: put_file('file_name', [mode='ascii'])
 
     PUT's file_name to server using 'mode'
 
