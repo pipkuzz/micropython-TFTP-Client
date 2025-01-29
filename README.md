@@ -14,7 +14,7 @@ A simple TFTP client in MicroPython. Fully functional PUT and GET in the default
         
     Method: put_file('file_name', [mode='octet'])
 
-        PUT's file_name to 'host' using 'mode'
+        PUT's 'file_name' to 'host' using 'mode'
 
         Args:
             file_name (str): Name of file to be PUT.
@@ -26,7 +26,7 @@ A simple TFTP client in MicroPython. Fully functional PUT and GET in the default
 
     Method: get_file('file_name', [mode='octet'])
 
-        GET's file_name from 'host' using 'mode'
+        GET's 'file_name' from 'host' using 'mode'
 
         Args:
             file_name (str): Name of file to GET.
