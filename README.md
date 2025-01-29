@@ -11,28 +11,27 @@ class: TFTPClient([host='255.255.255.255'], [port=69])
 
     Returns:
         socket: Socket for communication with TFTP server
-
         
-Method: put_file('file_name', [mode='ascii'])
+    Method: put_file('file_name', [mode='ascii'])
 
-  PUT's file_name to server using 'mode'
+    PUT's file_name to server using 'mode'
 
-  Args:
-    file_name (str): Name of file to be PUT.
-    mode (str) Optional. Selects data format mode.
+    Args:
+        file_name (str): Name of file to be PUT.
+        mode (str) Optional. Selects data format mode.
 
-  Returns:
-    Bool: Indecates success of PUT method.
+    Returns:
+        Bool: Indecates success of PUT method.
     
 
 Method: get_file('file_name', [mode='ascii'])
 
-  GET's file_name from server using 'mode'
+    GET's file_name from server using 'mode'
 
-  Args:
-    file_name (str): Name of file to GET.
-    mode (str) Optional. Selects data format mode.
+    Args:
+        file_name (str): Name of file to GET.
+        mode (str) Optional. Selects data format mode.
 
-  Returns:
-    Bool: Indecates success. True/False.
+    Returns:
+        Bool: Indecates success. True/False.
     
