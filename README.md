@@ -18,7 +18,7 @@ A simple TFTP client in MicroPython. Fully functional PUT and GET in the default
 
         Args:
             file_name (str): Name of file to be PUT.
-            mode (str) Optional. Default 'octet'.
+            mode (str) Optional. Defaults to 'octet'.
 
         Returns:
             Bool: Indecates success. True/False.
@@ -30,7 +30,7 @@ A simple TFTP client in MicroPython. Fully functional PUT and GET in the default
 
         Args:
             file_name (str): Name of file to GET.
-            mode (str) Optional. Default 'octet'.
+            mode (str) Optional. Defaults to 'octet'.
 
         Returns:
             Bool: Indecates success. True/False.
