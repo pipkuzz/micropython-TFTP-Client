@@ -1,0 +1,8 @@
+TFTP message formats
+There are four types of TFTP messages. The first two octets indicate the type of message. Mode field defines the type of data (ASCII, binary, Mail). The filename and mode fields are delimited using an all zeroes octet.
+
+1. Read request (Type 1). This is used by the client to get a copy of a file from the server.
+
+2. Write request (Type 2). This command is used by the client to write a file into the server.
+
+3. Data (Type 3) this command contains block of data, blah blah blah on and 512b
