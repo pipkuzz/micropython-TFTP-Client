@@ -21,7 +21,7 @@ A simple TFTP client in MicroPython. Fully functional PUT and GET in the default
             mode (str) Optional. Default 'octet'.
 
         Returns:
-            Bool: Indecates success of PUT method.
+            Bool: Indecates success. True/False.
     
 
     Method: get_file('file_name', [mode='octet'])
