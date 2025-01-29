@@ -6,7 +6,6 @@ class TFTPClient:
     DEFAULT_PORT = 69
     DEFAULT_TIMEOUT = 2
     DEFAULT_HOST = '255.255.255.255'
-    DEFAULT_MODE = 'octet'
     GET_REQ_PKT = b'\x00\x01'
     PUT_REQ_PKT = b'\x00\x02'
     DATA_PKT = b'\x00\x03'
@@ -17,11 +16,9 @@ class TFTPClient:
     ACK_SIZE = 4
 
     def __init__(self, host=DEFAULT_HOST,
-                 port=DEFAULT_PORT,
-                 mode=DEFAULT_MODE):
+                 port=DEFAULT_PORT):
         self.host = host
         self.port = port
-        self.mode = mode
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         self.sock.settimeout(self.DEFAULT_TIMEOUT)
 
@@ -37,7 +34,7 @@ class TFTPClient:
                   f"{self.port}.\nError: {e}")
             return False
 
-# ***********************   receive_ack   ****************
+# ***********************   receive ack   ****************
 
     def receive_ack(self):
         try:
@@ -51,7 +48,7 @@ class TFTPClient:
             print(f"Failed to receive ACK.\nError: {e}")
             return None, None
 
-# ***********************   send_ack   *****************
+# ***********************   send ack   *****************
 
     def send_ack(self, ack, addr):
         try:
@@ -62,7 +59,7 @@ class TFTPClient:
             print(f"Failed to send ACK to {addr}.\nError: {e}")
             return False
 
-# ***********************   receive_data   ****************
+# ***********************   receive data   ****************
 
     def receive_data(self):
         try:
@@ -78,7 +75,7 @@ class TFTPClient:
                   f"{self.host}:{self.port}\nError: {e}")
             return None, None
 
-# ***********************   send_data   *********************
+# ***********************   send data   *********************
 
     def send_data(self, data_pkt, addr):
         try:
@@ -89,13 +86,14 @@ class TFTPClient:
             print(f"Failed to send data to {addr}.\nError: {e}")
             return False
 
-# ***********************   put_file   *******************
+# ***********************   put file   *******************
 
     def put_file(self, file_name, mode='octet'):
+        # Force octet mode until netascii mode is fixed
+        mode = 'octet'
         # Check if the file exists
         try:
             os.stat(file_name)
-
         except OSError:
             print(f"Error: File '{file_name}' does not exist.")
             return False
@@ -116,7 +114,7 @@ class TFTPClient:
                             # Read 512 bytes from the file
                             data = f.read(self.READ_DATA_SIZE)
                     # ***   DEBUG   ***
-                            #  print(f"Befor encode: {data}\n{len(data)} bytes")
+                            # print(f"Befor encode: {data}\n{len(data)} bytes")
                     # ***   DEBUG   ***
                             # convert to netascii if needed
                             if mode == 'netascii':
@@ -159,12 +157,12 @@ class TFTPClient:
         else:
             return False
 
-# **********************   get_file   ********************
+# **********************   get file   ********************
 
-    def get_file(self, file_name):
+    def get_file(self, file_name, mode='octet'):
         # Send request for a file
         getrequest = (self.GET_REQ_PKT
-                      + file_name.encode() + b'\x00' + self.mode.encode()
+                      + file_name.encode() + b'\x00' + mode.encode()
                       + b'\x00')
         if self.send_request(getrequest):
 
@@ -192,11 +190,10 @@ class TFTPClient:
                     if not self.send_ack(ack, addr):
                         return False
 
-                    # get data from packet
+                    # extract data from packet
                     write_data = data[4:]
                     # convert from netacii if needed
-                    if self.mode == 'netascii':
-                        print("Receiving netascii data")
+                    if mode == 'netascii':
                         write_data = self.from_netascii(write_data)
 
                     # write data block to file
@@ -229,7 +226,7 @@ class TFTPClient:
         error_msg = error_pkt[4:].decode()
         print(f"TFTP Error {error_code}: {error_msg}")
 
-# ***********************   end of get_file  ****************
+# ***********************   close socket  ****************
 
     def close(self):
         self.sock.close()
