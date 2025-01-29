@@ -3,7 +3,7 @@ A simple TFTP client in MicroPython. Fully functional PUT and GET in the default
 
     Class: TFTPClient([host='255.255.255.255'], [port=69])
 
-        Creates a socket for communication with 'host'
+        Creates a socket and methods for communication with 'host'
 
         Args:
             host (str): Defaults to '255.255.255.255'
@@ -21,7 +21,7 @@ A simple TFTP client in MicroPython. Fully functional PUT and GET in the default
             mode (str) Optional. Defaults to 'octet'.
 
         Returns:
-            Bool: Indecates success. True/False.
+            boolean: Indecates success. True/False.
     
 
     Method: get_file('file_name', [mode='octet'])
@@ -33,5 +33,5 @@ A simple TFTP client in MicroPython. Fully functional PUT and GET in the default
             mode (str) Optional. Defaults to 'octet'.
 
         Returns:
-            Bool: Indecates success. True/False.
+            boolean: Indecates success. True/False.
     
