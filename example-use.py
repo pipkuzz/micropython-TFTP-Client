@@ -38,21 +38,21 @@ tftp_client = TFTPClient(TFTP_SERVER_IP)
 # The client returns True on successful completion and False otherwise
 # We can test for that...
 
-# PUT image.svg to TFTP server
+# PUT image.svg to TFTP server in default octet mode
 if tftp_client.put_file("image.svg"):
     print("File transfer image.svg succsess.")
 
 else:
     print("File transfer image.svg failed")
 
-# GET test-512.text from TFTP server
-if tftp_client.get_file("test-512.txt"):
+# GET test-512.text from TFTP server in netascii mode
+if tftp_client.get_file("test-512.txt", 'netascii'):
     print("File transfer test-512.txt succsess.")
 
 else:
     print("File transfer test-512.txt failed")
 
-# test error handling
+# test error handling with non-existant file
 if tftp_client.put_file("no-file.txt"):
     print("File transfer no-file.txt succsess.")
 
