@@ -91,7 +91,9 @@ class TFTPClient:
 
 # ***********************   put_file   *******************
 
-    def put_file(self, file_name, mode='octet'):
+    def put_file(self, file_name):
+        # force octet mode for now!
+        mode = 'octet'
         # Check if the file exists
         try:
             os.stat(file_name)
