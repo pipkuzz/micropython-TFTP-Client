@@ -7,11 +7,13 @@
 #
 # 3. reset() your board.
 #
+# 4. If you dont need wifi, comment out the wifi setup section!
+#
 import network
 import time
 from TFTPClient import TFTPClient
 
-
+# ***************************   wifi setup   *****************
 WIFI_SSID = "your_SSID"
 WIFI_PASSWORD = "your_password"
 TFTP_SERVER_IP = "your_tftp_server_IP"
@@ -31,6 +33,9 @@ while not wlan.status() == network.STAT_GOT_IP:
     time.sleep(1)
 
 print()
+# **************************   End wifi setup   ***********
+
+# **************************   TFTPClient   ***************
 
 # initalise a tftp client to put and get some files...
 tftp_client = TFTPClient(TFTP_SERVER_IP)
@@ -47,18 +52,19 @@ else:
 
 # GET test-512.text from TFTP server in netascii mode
 if tftp_client.get_file("test-512.txt", 'netascii'):
-    print("File transfer test-512.txt succsess.")
+    print("File transfer test-512.txt (netascii) succsess.")
 
 else:
-    print("File transfer test-512.txt failed")
+    print("File transfer test-512.txt (netascii) failed")
+
+# GET test-512.text from TFTP server in octet mode
+if tftp_client.get_file("test-512.txt"):
+    print("File transfer test-512.txt (octet) succsess.")
+
+else:
+    print("File transfer test-512.txt (octet) failed")
 
 # test error handling with non-existant file
-if tftp_client.put_file("no-file.txt"):
-    print("File transfer no-file.txt succsess.")
-
-else:
-    print("File transfer no-file.txt failed")
-
 if tftp_client.get_file("no-file.txt"):
     print("File transfer no-file.txt succsess.")
 
