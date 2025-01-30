@@ -1,5 +1,5 @@
 # MicroPython-TFTP-Client
-A simple TFTP client in MicroPython. Fully functional PUT and GET in the default octet mode complete with os and server error reporting. GET works fine in netascii mode, while PUT is still work in progress and currently disabled. Check example-use.py for use.
+A simple TFTP client in MicroPython. Fully functional PUT and GET in the default octet mode complete with os and server error reporting. GET works fine in netascii mode, while PUT is still work in progress and currently disabled. Check example-use.py for use. Originally written for esp32, but tested and just as functional on Ubuntu 24.04.1 LTS.
 
     Class: TFTPClient([host='255.255.255.255'], [port=69])
 
