@@ -31,7 +31,7 @@ class TFTPClient:
             return True
 
         except Exception as e:
-            print(f"Failed to connect to host {self.host}:",
+            print(f"Error: Failed to connect to host {self.host}:",
                   f"{self.port}.\nError: {e}")
             return False
 
@@ -46,7 +46,7 @@ class TFTPClient:
             return ack, addr
 
         except Exception as e:
-            print(f"Failed to receive ACK.\nError: {e}")
+            print(f"Error: Failed to receive ACK.\nError: {e}")
             return None, None
 
 # ***********************   send_ack   *****************
@@ -57,7 +57,7 @@ class TFTPClient:
             return True
 
         except Exception as e:
-            print(f"Failed to send ACK to {addr}.\nError: {e}")
+            print(f"Error: Failed to send ACK to {addr}.\nError: {e}")
             return False
 
 # ***********************   receive_data   ****************
@@ -72,7 +72,7 @@ class TFTPClient:
             return data, addr
 
         except Exception as e:
-            print("Failed to receive data from",
+            print("Error: Failed to receive data from",
                   f"{self.host}:{self.port}\nError: {e}")
             return None, None
 
@@ -84,7 +84,7 @@ class TFTPClient:
             return True
 
         except Exception as e:
-            print(f"Failed to send data to {addr}.\nError: {e}")
+            print(f"Error: Failed to send data to {addr}.\nError: {e}")
             return False
 
 # ***********************   put_file   *******************
