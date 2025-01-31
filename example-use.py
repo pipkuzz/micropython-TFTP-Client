@@ -45,33 +45,39 @@ tftp_client = TFTPClient(TFTP_SERVER_IP)
 
 # PUT image.svg to TFTP server in default octet mode
 if tftp_client.put_file("image.svg"):
-    print("File transfer image.svg succsess.")
+    print("PUT 'image.svg' ('octet' mode) succsess.")
 
 else:
-    print("File transfer image.svg failed")
+    print("PUT 'image.svg' ('octet' mode) failed")
+
+if tftp_client.put_file("image.svg", 'netascii'):
+    print("PUT 'image.svg' ('netascii' mode) succsess.")
+
+else:
+    print("PUT 'image.svg' ('netascii' mode) failed")
 
 # GET test-512.text from TFTP server in netascii mode
 if tftp_client.get_file("test-512.txt", 'netascii'):
-    print("File transfer test-512.txt (netascii) succsess.")
+    print("GET 'test-512.txt' ('netascii' mode) succsess.")
 
 else:
-    print("File transfer test-512.txt (netascii) failed")
+    print("GET 'test-512.txt' ('netascii' mode) failed")
 
 # GET test-512.text from TFTP server in octet mode
 if tftp_client.get_file("test-512.txt"):
-    print("File transfer test-512.txt (octet) succsess.")
+    print("GET 'test-512.txt' ('octet' mode) succsess.")
 
 else:
-    print("File transfer test-512.txt (octet) failed")
+    print("GET 'test-512.txt' ('octet' mode) failed")
 
 # test error handling with non-existant file
-if tftp_client.get_file("no-file.txt"):
-    print("File transfer no-file.txt succsess.")
+if tftp_client.get_file("no-file-here.txt"):
+    print("GET 'no-file-here.txt' ('octet' mode) succsess.")
 
 else:
-    print("File transfer no-file.txt failed")
+    print("GET 'no-file-here.txt' ('octet' mode) failed")
 
 # close the socket when we're done.
 tftp_client.close()
 
-print("Opperation completed")
+print("Demo complete")
