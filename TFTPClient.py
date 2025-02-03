@@ -19,23 +19,24 @@ class TFTPClient:
                  port=DEFAULT_PORT):
         self.host = host
         self.port = port
-        self.sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-        self.sock.settimeout(self.DEFAULT_TIMEOUT)
 
-# ***********************   send read/write request   *****************
-
-    def send_request(self, request):
+    def send_request(self, request, sock):
         try:
-            self.sock.sendto(request, (self.host, self.port))
+            sock.sendto(request, (self.host, self.port))
             return True
         except Exception as e:
             print(f"Error: Failed to connect to host {self.host}:",
                   f"{self.port}.\nError: {e}")
             return False
 
-    def receive_ack(self):
+    def create_socket(self):
+        sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        sock.settimeout(self.DEFAULT_TIMEOUT)
+        return sock
+
+    def receive_ack(self, sock):
         try:
-            ack, addr = self.sock.recvfrom(self.ACK_SIZE)
+            ack, addr = sock.recvfrom(self.ACK_SIZE)
             if ack[:2] == self.ERROR_PKT:
                 self.handle_error(ack)
                 return None, None
@@ -44,17 +45,17 @@ class TFTPClient:
             print(f"Error: Failed to receive ACK.\nError: {e}")
             return None, None
 
-    def send_ack(self, ack, addr):
+    def send_ack(self, ack, addr, sock):
         try:
-            self.sock.sendto(ack, addr)
+            sock.sendto(ack, addr)
             return True
         except Exception as e:
             print(f"Error: Failed to send ACK to {addr}.\nError: {e}")
             return False
 
-    def receive_data(self):
+    def receive_data(self, sock):
         try:
-            data, addr = self.sock.recvfrom(self.READ_BLK_SIZE)
+            data, addr = sock.recvfrom(self.READ_BLK_SIZE)
             if data[:2] == self.ERROR_PKT:
                 self.handle_error(data)
                 return None, None
@@ -64,18 +65,19 @@ class TFTPClient:
                   f"{self.host}:{self.port}\nError: {e}")
             return None, None
 
-    def send_data(self, data_pkt, addr):
+    def send_data(self, data_pkt, addr, sock):
         try:
-            self.sock.sendto(data_pkt, addr)
+            sock.sendto(data_pkt, addr)
             return True
         except Exception as e:
             print(f"Error: Failed to send data to {addr}.\nError: {e}")
             return False
 
-# ***********************   get_file   **************
+# ***********************   put_file   **************
 
     def put_file(self, file_name, mode='octet'):
         try:
+            sock = self.create_socket()
             # Check if the file exists
             try:
                 os.stat(file_name)
@@ -86,8 +88,8 @@ class TFTPClient:
             putrequest = (self.PUT_REQ_PKT + file_name.encode()
                           + b'\x00' + mode.encode()
                           + b'\x00')
-            if self.send_request(putrequest):
-                ack, addr = self.receive_ack()
+            if self.send_request(putrequest, sock):
+                ack, addr = self.receive_ack(sock)
                 # if it's a valid response to the request
                 if ack == (self.ACK_PKT + b'\x00\x00'):
                     try:
@@ -113,12 +115,13 @@ class TFTPClient:
                                                 send_blk_num.to_bytes(2, 'big')
                                                 + data[:self.READ_DATA_SIZE])
                                     # Send the packet to the server
-                                    if not self.send_data(data_pkt, addr):
+                                    if not self.send_data(data_pkt,
+                                                          addr, sock):
                                         return False
                                     # Increment the block number
                                     send_blk_num += 1
                                     # Receive ACK
-                                    ack, addr = self.receive_ack()
+                                    ack, addr = self.receive_ack(sock)
                                     if ack is None:
                                         return False
                                     data = data[self.READ_DATA_SIZE:]
@@ -131,12 +134,12 @@ class TFTPClient:
                                             + send_blk_num.to_bytes(2, 'big')
                                             + overflow)
                                 # Send the packet to the server
-                                if not self.send_data(data_pkt, addr):
+                                if not self.send_data(data_pkt, addr, sock):
                                     return False
                                 # Increment the block number
                                 send_blk_num += 1
-                                # Receive ACK
-                                ack, addr = self.receive_ack()
+                                # Receivesend_request ACK
+                                ack, addr = self.receive_ack(sock)
                                 if ack is None:
                                     return False
                             # Send zero-byte if last packet was == 512 bytes
@@ -144,7 +147,7 @@ class TFTPClient:
                                 zero_pkt = (self.DATA_PKT +
                                             send_blk_num.to_bytes(2, 'big')
                                             + b'')
-                                if not self.send_data(zero_pkt, addr):
+                                if not self.send_data(zero_pkt, addr, sock):
                                     return False
                         return True
                     except Exception as e:
@@ -156,24 +159,24 @@ class TFTPClient:
             else:
                 return False
         finally:
-            self.close()
-            self.__init__(self.host, self.port)
+            sock.close()
 
 # **********************   get_file   ********************
 
     def get_file(self, file_name, mode='octet'):
         try:
+            sock = self.create_socket()
             # Send request for 'file_name'
             getrequest = (self.GET_REQ_PKT
                           + file_name.encode() + b'\x00' + mode.encode()
                           + b'\x00')
-            if self.send_request(getrequest):
+            if self.send_request(getrequest, sock):
                 # Open or create file to write to
                 with open(file_name, 'wb') as f:
                     # Loop for as long as we're receiving data
                     while True:
                         # read data and address from the socket
-                        data, addr = self.receive_data()
+                        data, addr = self.receive_data(sock)
                         # check we have received some data
                         if data is None:
                             return False
@@ -185,7 +188,7 @@ class TFTPClient:
                         recvd_blk_num = int.from_bytes(data[2:4], 'big')
                         ack = (self.ACK_PKT
                                + recvd_blk_num.to_bytes(2, 'big'))
-                        if not self.send_ack(ack, addr):
+                        if not self.send_ack(ack, addr, sock):
                             return False
                         # get data from packet
                         write_data = data[4:]
@@ -200,8 +203,7 @@ class TFTPClient:
             else:
                 return False
         finally:
-            self.close()
-            self.__init__(self.host, self.port)
+            sock.close()
 
 # **********************   netascii functions   *************
 
@@ -224,5 +226,3 @@ class TFTPClient:
         error_msg = error_pkt[4:].decode()
         print(f"TFTP Error {error_code}: {error_msg}")
 
-    def close(self):
-        self.sock.close()

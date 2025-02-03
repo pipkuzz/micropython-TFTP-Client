@@ -77,7 +77,4 @@ if tftp_client.get_file("no-file-here.txt"):
 else:
     print("GET 'no-file-here.txt' ('octet' mode) failed")
 
-# close the socket when we're done.
-tftp_client.close()
-
 print("Demo complete")
